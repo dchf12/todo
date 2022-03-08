@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function ToDo(props: {
+export default function Todo(props: {
   id: string | undefined;
   completed: boolean | undefined;
-  name: string | null | undefined;
+  name: {} | null | undefined;
 }): JSX.Element {
   return (
     <li className="todo stack-small">

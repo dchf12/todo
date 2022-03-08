@@ -1,6 +1,17 @@
-import ToDo from './components/Todo';
+import Todo from './components/Todo';
 
-export default function App() {
+export default function App(props: {
+  tasks: {
+    id: string | undefined;
+    completed: boolean | undefined;
+    name: {} | null | undefined;
+  }[];
+}): JSX.Element {
+  const taskList = props.tasks.map(
+    (task): JSX.Element => (
+      <Todo id={task.id} name={task.name} completed={task.completed} key={task.id} />
+    )
+  );
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
@@ -44,9 +55,7 @@ export default function App() {
         className="todo-list stack-large stack-exception"
         aria-labelledby="list-heading"
       >
-        <ToDo name="Eat" completed={true} id="todo-0" />
-        <ToDo name="Sleep" completed={false} id="todo-1" />
-        <ToDo name="Repeat" completed={false} id="todo-2" />
+        {taskList}
       </ul>
     </div>
   );
