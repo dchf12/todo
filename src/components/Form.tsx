@@ -1,8 +1,13 @@
 import React from 'react';
 
-export default function Form() {
+export default function Form(props: { addTask: (arg0: string) => void }): JSX.Element {
+  function handleSubmit(e: { preventDefault: () => void }): void {
+    e.preventDefault();
+    props.addTask('Say hello!');
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <h2 className="label-wrapper">
         <label htmlFor="new-todo-input" className="label__lg">
           What needs to be done?
