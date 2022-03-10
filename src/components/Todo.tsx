@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function Todo(props: {
   id: string | undefined;
   completed: boolean | undefined;

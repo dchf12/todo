@@ -1,6 +1,8 @@
 import Todo from './components/Todo';
 import Form from './components/Form';
 import FilterButton from './components/FilterButton';
+import { useState } from 'react';
+import { nanoid } from 'nanoid';
 
 export default function App(props: {
   tasks: {
@@ -15,8 +17,10 @@ export default function App(props: {
       <Todo id={task.id} name={task.name} completed={task.completed} key={task.id} />
     )
   );
+
   function addTask(name: {} | null | undefined): void {
-    alert(name);
+    const newTask = { id: 'todo-' + nanoid(), name: name, completed: false };
+    setTasks([...tasks, newTask]);
   }
   return (
     <div className="todoapp stack-large">
