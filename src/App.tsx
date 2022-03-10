@@ -9,7 +9,8 @@ export default function App(props: {
     name: {} | null | undefined;
   }[];
 }): JSX.Element {
-  const taskList = props.tasks.map(
+  const [tasks, setTasks] = useState(props.tasks);
+  const taskList = tasks.map(
     (task): JSX.Element => (
       <Todo id={task.id} name={task.name} completed={task.completed} key={task.id} />
     )

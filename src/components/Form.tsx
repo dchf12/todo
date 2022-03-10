@@ -1,9 +1,17 @@
-import React from 'react';
+import { useState } from 'react';
 
 export default function Form(props: { addTask: (arg0: string) => void }): JSX.Element {
+  const [name, setName] = useState('');
+
+  function handleChange(e: { target: { value: string } }) {
+    setName(e.target.value);
+  }
+
+  // Submit時、addTask実行
   function handleSubmit(e: { preventDefault: () => void }): void {
     e.preventDefault();
-    props.addTask('Say hello!');
+    props.addTask(name);
+    setName('');
   }
 
   return (
@@ -19,6 +27,8 @@ export default function Form(props: { addTask: (arg0: string) => void }): JSX.El
         className="input input__lg"
         name="text"
         autoComplete="off"
+        value={name}
+        onChange={handleChange}
       />
       <button type="submit" className="btn btn__primary btn__lg">
         Add
