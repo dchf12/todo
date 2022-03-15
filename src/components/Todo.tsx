@@ -2,6 +2,7 @@ export default function Todo(props: {
   id: string | undefined;
   completed: boolean | undefined;
   toggleTaskCompleted: (arg0: string | undefined) => void;
+  deleteTask: (arg0: string | undefined) => void;
   name: {} | null | undefined;
 }): JSX.Element {
   return (
@@ -22,7 +23,13 @@ export default function Todo(props: {
         <button type="button" className="btn">
           Edit <span className="visually-hidden">{props.name}</span>
         </button>
-        <button type="button" className="btn btn__danger">
+        <button
+          type="button"
+          className="btn btn__danger"
+          onClick={() => {
+            props.deleteTask(props.id);
+          }}
+        >
           Delete <span className="visually-hidden">{props.name}</span>
         </button>
       </div>

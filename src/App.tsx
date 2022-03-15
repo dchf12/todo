@@ -23,7 +23,10 @@ export default function App(props: {
     });
     setTasks(updatedTasks);
   }
-
+  function deleteTask(id: string | undefined): void {
+    const remainingTasks = tasks.filter((task) => id !== task.id);
+    setTasks(remainingTasks);
+  }
   const [tasks, setTasks] = useState(props.tasks);
   const taskList: JSX.Element[] = tasks.map((task) => (
     <Todo
@@ -32,6 +35,7 @@ export default function App(props: {
       completed={task.completed}
       key={task.id}
       toggleTaskCompleted={toggleTaskCompleted}
+      deleteTask={deleteTask}
     />
   ));
 
