@@ -4,19 +4,18 @@ import FilterButton from './components/FilterButton';
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
 
-export default function App(props: {
-  tasks: {
-    id: string | undefined;
-    completed: boolean | undefined;
-    name: {} | null | undefined;
-  }[];
-}): JSX.Element {
-  interface FilterMap {
-    All: () => boolean;
-    Active: (task: any) => boolean;
-    Completed: (task: any) => boolean;
-    [key: string]: (task: any) => boolean;
-  }
+interface Task {
+  id: string | undefined;
+  completed: boolean | undefined;
+  name: {} | null | undefined;
+}
+interface FilterMap {
+  All: () => boolean;
+  Active: (task: any) => boolean;
+  Completed: (task: any) => boolean;
+  [key: string]: (task: any) => boolean;
+}
+export default function App(props: { tasks: Task[] }): JSX.Element {
   const FILTER_MAP: FilterMap = {
     All: () => true,
     Active: (task) => !task.completed,
@@ -24,7 +23,33 @@ export default function App(props: {
   };
   const FILTER_NAMES = Object.keys(FILTER_MAP);
   const [filter, setFilter] = useState('All');
+  const filterList = FILTER_NAMES.map((filterName) => (
+    <FilterButton
+      key={filterName}
+      name={filterName}
+      isPressed={filterName === filter}
+      setFilter={setFilter}
+    />
+  ));
+  const [tasks, setTasks] = useState(props.tasks);
+  const taskList = tasks
+    .filter(FILTER_MAP[filter])
+    .map((task) => (
+      <Todo
+        id={task.id}
+        name={task.name}
+        completed={task.completed}
+        key={task.id}
+        toggleTaskCompleted={toggleTaskCompleted}
+        deleteTask={deleteTask}
+        editTask={editTask}
+      />
+    ));
 
+  function addTask(name: {} | null | undefined): void {
+    const newTask = { id: 'todo-' + nanoid(), name: name, completed: false };
+    setTasks([...tasks, newTask]);
+  }
   function toggleTaskCompleted(id: string | undefined): void {
     const updatedTasks = tasks.map((task) => {
       // if this task has the same ID as the edited task
@@ -45,40 +70,11 @@ export default function App(props: {
     const editedTaskList = tasks.map((task) => {
       // if this task has the same ID as the edited task
       if (id === task.id) {
-        //
         return { ...task, name: newName };
       }
       return task;
     });
     setTasks(editedTaskList);
-  }
-
-  const [tasks, setTasks] = useState(props.tasks);
-  const taskList = tasks
-    .filter(FILTER_MAP[filter])
-    .map((task) => (
-      <Todo
-        id={task.id}
-        name={task.name}
-        completed={task.completed}
-        key={task.id}
-        toggleTaskCompleted={toggleTaskCompleted}
-        deleteTask={deleteTask}
-        editTask={editTask}
-      />
-    ));
-  const filterList = FILTER_NAMES.map((filterName) => (
-    <FilterButton
-      key={filterName}
-      name={filterName}
-      isPressed={filterName === filter}
-      setFilter={setFilter}
-    />
-  ));
-
-  function addTask(name: {} | null | undefined): void {
-    const newTask = { id: 'todo-' + nanoid(), name: name, completed: false };
-    setTasks([...tasks, newTask]);
   }
   const tasksNoun = taskList.length === 1 ? 'task' : 'tasks';
   const headingText = `${taskList.length} ${tasksNoun} remaining`;

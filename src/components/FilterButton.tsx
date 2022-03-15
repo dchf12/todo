@@ -1,5 +1,3 @@
-import { ReactChild, ReactFragment, ReactPortal } from 'react';
-
 export default function FilterButton(props: {
   isPressed: boolean | undefined;
   setFilter: (arg0: any) => void;

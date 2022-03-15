@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 
-export default function Todo(props: {
+interface Task {
   id: string | undefined;
   completed: boolean | undefined;
+  name: {} | null | undefined;
   toggleTaskCompleted: (arg0: string | undefined) => void;
   deleteTask: (arg0: string | undefined) => void;
   editTask: (arg0: string | undefined, newName: string | undefined) => void;
-  name: {} | null | undefined;
-}): JSX.Element {
+}
+
+export default function Todo(props: Task): JSX.Element {
   const [isEditing, setEditing] = useState(false);
   const [newName, setNewName] = useState('');
 
