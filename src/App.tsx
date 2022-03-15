@@ -11,6 +11,20 @@ export default function App(props: {
     name: {} | null | undefined;
   }[];
 }): JSX.Element {
+  interface FilterMap {
+    All: () => boolean;
+    Active: (task: any) => boolean;
+    Completed: (task: any) => boolean;
+    [key: string]: (task: any) => boolean;
+  }
+  const FILTER_MAP: FilterMap = {
+    All: () => true,
+    Active: (task) => !task.completed,
+    Completed: (task) => task.completed,
+  };
+  const FILTER_NAMES = Object.keys(FILTER_MAP);
+  const [filter, setFilter] = useState('All');
+
   function toggleTaskCompleted(id: string | undefined): void {
     const updatedTasks = tasks.map((task) => {
       // if this task has the same ID as the edited task
@@ -40,15 +54,25 @@ export default function App(props: {
   }
 
   const [tasks, setTasks] = useState(props.tasks);
-  const taskList: JSX.Element[] = tasks.map((task) => (
-    <Todo
-      id={task.id}
-      name={task.name}
-      completed={task.completed}
-      key={task.id}
-      toggleTaskCompleted={toggleTaskCompleted}
-      deleteTask={deleteTask}
-      editTask={editTask}
+  const taskList = tasks
+    .filter(FILTER_MAP[filter])
+    .map((task) => (
+      <Todo
+        id={task.id}
+        name={task.name}
+        completed={task.completed}
+        key={task.id}
+        toggleTaskCompleted={toggleTaskCompleted}
+        deleteTask={deleteTask}
+        editTask={editTask}
+      />
+    ));
+  const filterList = FILTER_NAMES.map((filterName) => (
+    <FilterButton
+      key={filterName}
+      name={filterName}
+      isPressed={filterName === filter}
+      setFilter={setFilter}
     />
   ));
 
@@ -63,11 +87,7 @@ export default function App(props: {
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
       <Form addTask={addTask} />
-      <div className="filters btn-group stack-exception">
-        <FilterButton />
-        <FilterButton />
-        <FilterButton />
-      </div>
+      <div className="filters btn-group stack-exception">{filterList}</div>
       <h2 id="list-heading">{headingText}</h2>
       <ul
         role="list"
