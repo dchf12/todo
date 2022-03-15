@@ -11,9 +11,28 @@ export default function App(props: {
     name: {} | null | undefined;
   }[];
 }): JSX.Element {
+  function toggleTaskCompleted(id: string | undefined): void {
+    const updatedTasks = tasks.map((task) => {
+      // if this task has the same ID as the edited task
+      if (id === task.id) {
+        // use object spread to make a new object
+        // whose `completed` prop has been inverted
+        return { ...task, completed: !task.completed };
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
+  }
+
   const [tasks, setTasks] = useState(props.tasks);
   const taskList: JSX.Element[] = tasks.map((task) => (
-    <Todo id={task.id} name={task.name} completed={task.completed} key={task.id} />
+    <Todo
+      id={task.id}
+      name={task.name}
+      completed={task.completed}
+      key={task.id}
+      toggleTaskCompleted={toggleTaskCompleted}
+    />
   ));
 
   function addTask(name: {} | null | undefined): void {
