@@ -91,7 +91,7 @@ export default function App(props: { tasks: Task[] }): JSX.Element {
   useEffect(() => {
     if (prevTaskLength) {
       if (tasks.length - prevTaskLength === -1) {
-        if (!listHeadingRef.current) throw Error('null');
+        if (!listHeadingRef.current) throw Error('null'); // null check
         listHeadingRef.current.focus();
       }
     }
