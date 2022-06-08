@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	tmpl := template.Must(template.ParseFiles("../index.html"))
+	tmpl := template.Must(template.ParseFiles("../dist/index.html"))
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
