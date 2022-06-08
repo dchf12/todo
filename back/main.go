@@ -1,18 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+	"text/template"
 )
 
 func main() {
+	tmpl := template.Must(template.ParseFiles("../index.html"))
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Welcome to my website!")
+
+		tmpl.Execute(w, nil)
 	})
 
 	//static assets
-	fs := http.FileServer(http.Dir("static/"))
+	fs := http.FileServer(http.Dir("../dist/assets/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	http.ListenAndServe(":80", nil)
+	http.ListenAndServe(":8080", nil)
 }
