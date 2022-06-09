@@ -1,21 +1,52 @@
 package main
 
 import (
-	"net/http"
-	"text/template"
+	"database/sql"
+	"fmt"
+	"log"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	tmpl := template.Must(template.ParseFiles("../dist/index.html"))
+	// database connection
+	db, err := sql.Open("sqlite3", "./todo.sqlite3")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	pingErr := db.Ping()
+	if pingErr != nil {
+		log.Fatal(pingErr)
+	}
+	log.Println("Connected!")
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// create table if not exists
+	s := "todolist"
+	cmd := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (id SERIAL PRIMARY KEY NOT NULL,title TEXT NOT NULL,completed INTEGER)", s)
+	r, err := db.Exec(cmd)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(r)
+	// reade data from database
+	rows, err := db.Query("SELECT * FROM todolist")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(rows)
 
-		tmpl.Execute(w, nil)
-	})
+	// //html template stuff
+	// tmpl := template.Must(template.ParseFiles("../dist/index.html"))
 
-	//static assets
-	fs := http.FileServer(http.Dir("../dist/assets/"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 
-	http.ListenAndServe(":8080", nil)
+	// 	tmpl.Execute(w, nil)
+	// })
+
+	// //static assets
+	// fs := http.FileServer(http.Dir("../dist/assets/"))
+	// http.Handle("/static/", http.StripPrefix("/static/", fs))
+
+	// http.ListenAndServe(":8080", nil)
 }
