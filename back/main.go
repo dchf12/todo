@@ -79,3 +79,16 @@ func createTable(db *sql.DB) (int64, error) {
 	}
 	return id, nil
 }
+
+// insertTodo insert a new todo into the database and return the id
+func insertTodo(todo Todo, db *sql.DB) (int64, error) {
+	r, err := db.Exec("INSERT INTO %s (title, completed) VALUES (?, ?)", todo.Title, todo.Completed)
+	if err != nil {
+		return 0, err
+	}
+	id, err := r.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
