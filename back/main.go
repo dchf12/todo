@@ -66,3 +66,16 @@ func initDB(s string) (*sql.DB, error) {
 	}
 	return db, nil
 }
+
+// createTable create a new table if not exists in the database
+func createTable(db *sql.DB) (int64, error) {
+	r, err := db.Exec("CREATE TABLE IF NOT EXISTS todolist (id SERIAL PRIMARY KEY NOT NULL,title TEXT NOT NULL,completed INTEGER)")
+	if err != nil {
+		return 0, err
+	}
+	id, err := r.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
