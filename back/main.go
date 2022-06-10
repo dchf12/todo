@@ -92,3 +92,16 @@ func insertTodo(todo Todo, db *sql.DB) (int64, error) {
 	}
 	return id, nil
 }
+
+// updateTodo update a todo in the database and return the id
+func updateTodo(todo Todo, db *sql.DB) (int64, error) {
+	r, err := db.Exec("UPDATE todolist SET title=?, completed=? WHERE id=?", todo.Title, todo.Completed, todo.ID)
+	if err != nil {
+		return 0, err
+	}
+	id, err := r.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
