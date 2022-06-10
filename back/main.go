@@ -118,3 +118,31 @@ func deleteTodo(todo Todo, db *sql.DB) (int64, error) {
 	}
 	return id, nil
 }
+
+// getTodo get a todo from the database and return the id
+func getTodo(id int64, db *sql.DB) (Todo, error) {
+	var todo Todo
+	row := db.QueryRow("SELECT * FROM todolist WHERE id=?", id)
+	if err := row.Scan(&todo.ID, &todo.Title, &todo.Completed); err != nil {
+		return todo, err
+	}
+	return todo, nil
+}
+
+// getTodos get all todos from the database and return the id
+func getTodos(db *sql.DB) ([]Todo, error) {
+	var todos []Todo
+	rows, err := db.Query("SELECT * FROM todolist")
+	if err != nil {
+		return todos, err
+	}
+	for rows.Next() {
+		var todo Todo
+
+		if err := rows.Scan(&todo.ID, &todo.Title, &todo.Completed); err != nil {
+			return nil, err
+		}
+		todos = append(todos, todo)
+	}
+	return todos, nil
+}
