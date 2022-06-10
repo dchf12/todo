@@ -105,3 +105,16 @@ func updateTodo(todo Todo, db *sql.DB) (int64, error) {
 	}
 	return id, nil
 }
+
+// deleteTodo delete a todo in the database and return the id
+func deleteTodo(todo Todo, db *sql.DB) (int64, error) {
+	r, err := db.Exec("DELETE FROM todolist WHERE id=?", todo.ID)
+	if err != nil {
+		return 0, err
+	}
+	id, err := r.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
+}
