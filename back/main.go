@@ -72,7 +72,11 @@ func initDB(s string) (*sql.DB, error) {
 
 // createTable create a new table if not exists in the database
 func createTable(db *sql.DB) (int64, error) {
-	r, err := db.Exec("CREATE TABLE IF NOT EXISTS todolist (id SERIAL PRIMARY KEY NOT NULL,title TEXT NOT NULL,completed INTEGER)")
+	stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS todolist (id SERIAL PRIMARY KEY NOT NULL,title TEXT NOT NULL,completed INTEGER)")
+	if err != nil {
+		return 0, err
+	}
+	r, err := stmt.Exec()
 	if err != nil {
 		return 0, err
 	}
@@ -85,7 +89,11 @@ func createTable(db *sql.DB) (int64, error) {
 
 // insertTodo insert a new todo into the database and return the id
 func insertTodo(todo Todo, db *sql.DB) (int64, error) {
-	r, err := db.Exec("INSERT INTO todolist (id, title, completed) VALUES (?, ?, ?)", todo.ID, todo.Title, todo.Completed)
+	stmt, err := db.Prepare("INSERT INTO todolist (id, title, completed) VALUES (:id, :title, :completed)")
+	if err != nil {
+		return 0, err
+	}
+	r, err := stmt.Exec(sql.Named("id", todo.ID), sql.Named("title", todo.Title), sql.Named("completed", todo.Completed))
 	if err != nil {
 		return 0, err
 	}
@@ -98,7 +106,11 @@ func insertTodo(todo Todo, db *sql.DB) (int64, error) {
 
 // updateTodo update a todo in the database and return the id
 func updateTodo(todo Todo, db *sql.DB) (int64, error) {
-	r, err := db.Exec("UPDATE todolist SET title=?, completed=? WHERE id=?", todo.Title, todo.Completed, todo.ID)
+	stmt, err := db.Prepare("UPDATE todolist SET title=:title, completed=:completed WHERE id=:id")
+	if err != nil {
+		return 0, err
+	}
+	r, err := stmt.Exec(sql.Named("id", todo.ID), sql.Named("title", todo.Title), sql.Named("completed", todo.Completed))
 	if err != nil {
 		return 0, err
 	}
@@ -111,7 +123,11 @@ func updateTodo(todo Todo, db *sql.DB) (int64, error) {
 
 // deleteTodo delete a todo in the database and return the id
 func deleteTodo(todo Todo, db *sql.DB) (int64, error) {
-	r, err := db.Exec("DELETE FROM todolist WHERE id=?", todo.ID)
+	stmt, err := db.Prepare("DELETE FROM todolist WHERE id=:id")
+	if err != nil {
+		return 0, err
+	}
+	r, err := stmt.Exec(sql.Named("id", todo.ID))
 	if err != nil {
 		return 0, err
 	}
@@ -125,7 +141,11 @@ func deleteTodo(todo Todo, db *sql.DB) (int64, error) {
 // getTodo get a todo from the database and return the id
 func getTodo(id int64, db *sql.DB) (Todo, error) {
 	var todo Todo
-	row := db.QueryRow("SELECT * FROM todolist WHERE id=?", id)
+	stmt, err := db.Prepare("SELECT * FROM todolist WHERE id=;id")
+	if err != nil {
+		return todo, err
+	}
+	row := stmt.QueryRow(sql.Named("id", id))
 	if err := row.Scan(&todo.ID, &todo.Title, &todo.Completed); err != nil {
 		return todo, err
 	}
@@ -135,9 +155,13 @@ func getTodo(id int64, db *sql.DB) (Todo, error) {
 // getTodos get all todos from the database and return the id
 func getTodos(db *sql.DB) ([]Todo, error) {
 	var todos []Todo
-	rows, err := db.Query("SELECT * FROM todolist")
+	stmt, err := db.Prepare("SELECT * FROM todolist")
 	if err != nil {
-		return todos, err
+		return nil, err
+	}
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
 	}
 	for rows.Next() {
 		var todo Todo
