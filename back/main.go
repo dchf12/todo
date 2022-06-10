@@ -34,6 +34,9 @@ func main() {
 	fmt.Println(n)
 
 	// insert data into database
+	n, _ = insertTodo(Todo{ID: 1, Title: "Todo 1", Completed: 0}, db)
+	fmt.Println(n)
+
 	// update data in database
 	// delete data in database
 	// read data from database
@@ -82,7 +85,7 @@ func createTable(db *sql.DB) (int64, error) {
 
 // insertTodo insert a new todo into the database and return the id
 func insertTodo(todo Todo, db *sql.DB) (int64, error) {
-	r, err := db.Exec("INSERT INTO %s (title, completed) VALUES (?, ?)", todo.Title, todo.Completed)
+	r, err := db.Exec("INSERT INTO todolist (id, title, completed) VALUES (?, ?, ?)", todo.ID, todo.Title, todo.Completed)
 	if err != nil {
 		return 0, err
 	}
