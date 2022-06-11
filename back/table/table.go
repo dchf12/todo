@@ -22,7 +22,7 @@ func InitDB(s string) (*sql.DB, error) {
 }
 
 // createTable create a new table if not exists in the database
-func CreateTable(db *sql.DB) (int64, error) {
+func Create(db *sql.DB) (int64, error) {
 	stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS todolist (id SERIAL PRIMARY KEY NOT NULL,title TEXT NOT NULL,completed INTEGER)")
 	if err != nil {
 		return 0, err
