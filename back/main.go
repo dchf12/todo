@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	table "github.com/dchf12/todo/table"
+	"github.com/dchf12/todo/table"
 	_ "github.com/mattn/go-sqlite3"
 )
 

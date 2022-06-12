@@ -3,9 +3,9 @@ package table
 import "database/sql"
 
 type Todo struct {
-	ID        int64
-	Title     string
-	Completed int
+	ID        int64  `json:"id"`
+	Title     string `json:"title"`
+	Completed int    `json:"completed"`
 }
 
 // initDB create a new database
