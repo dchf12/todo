@@ -22,20 +22,16 @@ func InitDB(s string) (*sql.DB, error) {
 }
 
 // createTable create a new table if not exists in the database
-func Create(db *sql.DB) (int64, error) {
+func Create(db *sql.DB) error {
 	stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS todolist (id SERIAL PRIMARY KEY NOT NULL,title TEXT NOT NULL,completed INTEGER)")
 	if err != nil {
-		return 0, err
+		return err
 	}
-	r, err := stmt.Exec()
+	_, err = stmt.Exec()
 	if err != nil {
-		return 0, err
+		return err
 	}
-	id, err := r.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-	return id, nil
+	return nil
 }
 
 // insertTodo insert a new todo into the database and return the id

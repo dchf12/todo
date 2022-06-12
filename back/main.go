@@ -20,15 +20,18 @@ func main() {
 	log.Println("Connected!")
 
 	// create table if not exists
-	n, err := table.Create(db)
-	if err != nil {
+	if err := table.Create(db); err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(n)
-
 	// read data from database
 	// read all data from database
+	rows, err := table.GetTodos(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(rows)
+
 	// insert data into database
 	// update data in database
 	// delete data in database
