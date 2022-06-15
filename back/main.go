@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/dchf12/todo/table"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -24,29 +25,21 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// read data from database
-	// read all data from database
-	rows, err := table.GetTodos(db)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(rows)
+	e := echo.New()
 
-	// insert data into database
-	// update data in database
-	// delete data in database
+	//html template stuff
+	e.File("/", "../front/dist/index.html")
+	//static assets
+	e.Static("/static", "../front/dist/assets/")
 
-	// //html template stuff
-	// tmpl := template.Must(template.ParseFiles("../dist/index.html"))
+	e.Use(middleware.Recover())
+	e.Use(middleware.Logger())
 
-	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// routing
+	e.GET("/", table.GetTodos)
+	e.POST("/", table.InsertTodo)
+	e.PUT("/", table.UpdateTodo)
+	e.DELETE("/", table.DeleteTodo)
 
-	// 	tmpl.Execute(w, nil)
-	// })
-
-	// //static assets
-	// fs := http.FileServer(http.Dir("../dist/assets/"))
-	// http.Handle("/static/", http.StripPrefix("/static/", fs))
-
-	// http.ListenAndServe(":8080", nil)
+	e.Logger.Fatal(e.Start(":8080"))
 }
