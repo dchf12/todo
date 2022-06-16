@@ -3,6 +3,7 @@ import Form from './components/Form';
 import FilterButton from './components/FilterButton';
 import { useEffect, useRef, useState } from 'react';
 import { nanoid } from 'nanoid';
+import Http from './components/Http';
 
 interface Task {
   id: string | undefined;
@@ -23,7 +24,7 @@ function usePrevious(value: number) {
   });
   return ref.current;
 }
-export default function App(props: { tasks: Task[] }): JSX.Element {
+export default function App(): JSX.Element {
   const FILTER_MAP: FilterMap = {
     All: () => true,
     Active: (task) => !task.completed,
@@ -53,6 +54,16 @@ export default function App(props: { tasks: Task[] }): JSX.Element {
         editTask={editTask}
       />
     ));
+
+  const getTodoList = () => {
+    return Http.get('/')
+      .then((response) => {
+        setTasks(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   function addTask(name: {} | null | undefined): void {
     const newTask = { id: 'todo-' + nanoid(), name: name, completed: false };
