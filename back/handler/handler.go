@@ -19,7 +19,10 @@ func AddTodo(c echo.Context) error {
 }
 
 func GetTodos(c echo.Context) error {
-
+	todos, err := model.GetTodos()
+	if err != nil {
+		return err
+	}
 	return c.JSON(http.StatusOK, todos)
 }
 
