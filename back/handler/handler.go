@@ -14,7 +14,9 @@ func AddTodo(c echo.Context) error {
 	if err := c.Bind(todo); err != nil {
 		return err
 	}
-	model.InsertTodo(todo)
+	if err := model.InsertTodo(todo); err != nil {
+		return echo.ErrNotFound
+	}
 
 	return c.JSON(http.StatusCreated, todo)
 }
