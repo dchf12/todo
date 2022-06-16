@@ -6,3 +6,6 @@ TypeScript
 Node  
 React  
 Vite  
+Go
+Echo
+SQLite
