@@ -2,13 +2,18 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/dchf12/todo/model"
 	"github.com/labstack/echo"
 )
 
 func AddTodo(c echo.Context) error {
+	todo := new(model.Todo)
+	model.CreateTodo()
+	if err := c.Bind(todo); err != nil {
+		return err
+	}
+	model.InsertTodo(todo)
 
 	return c.JSON(http.StatusCreated, todo)
 }
