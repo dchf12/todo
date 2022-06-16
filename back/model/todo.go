@@ -2,33 +2,17 @@ package model
 
 import (
 	"database/sql"
-	"net/http"
-
-	"github.com/labstack/echo"
 )
 
 type Todo struct {
 	ID        int64  `json:"id"`
-	Title     string `json:"title"`
+	Name      string `json:"name"`
 	Completed int    `json:"completed"`
 }
 
-// initDB create a new database
-func InitDB(s string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", s)
-	if err != nil {
-		return nil, err
-	}
-	pingErr := db.Ping()
-	if pingErr != nil {
-		return nil, pingErr
-	}
-	return db, nil
-}
-
-// createTable create a new table if not exists in the database
-func Create(db *sql.DB) error {
-	stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS todolist (id SERIAL PRIMARY KEY NOT NULL,title TEXT NOT NULL,completed INTEGER)")
+// CreateTodo create a new table if not exists in the database
+func CreateTodo() error {
+	stmt, err := db.Prepare("CREATE TABLE IF NOT EXISTS todolist (id SERIAL PRIMARY KEY NOT NULL,name TEXT NOT NULL,completed INTEGER)")
 	if err != nil {
 		return err
 	}
@@ -39,73 +23,61 @@ func Create(db *sql.DB) error {
 	return nil
 }
 
-// insertTodo insert a new todo into the database and return the id
-func InsertTodo(todo Todo, db *sql.DB) (int64, error) {
-	stmt, err := db.Prepare("INSERT INTO todolist (id, title, completed) VALUES (:id, :title, :completed)")
+// InsertTodo insert a new todo into the database
+func InsertTodo(t *Todo) error {
+	stmt, err := db.Prepare("INSERT INTO todolist (id, name, completed) VALUES (:id, :name, :completed)")
 	if err != nil {
-		return 0, err
+		return err
 	}
-	r, err := stmt.Exec(sql.Named("id", todo.ID), sql.Named("title", todo.Title), sql.Named("completed", todo.Completed))
+	_, err = stmt.Exec(sql.Named("id", t.ID), sql.Named("name", t.Name), sql.Named("completed", t.Completed))
 	if err != nil {
-		return 0, err
+		return err
 	}
-	id, err := r.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-	return id, nil
+	return nil
 }
 
-// updateTodo update a todo in the database and return the id
-func UpdateTodo(todo Todo, db *sql.DB) (int64, error) {
-	stmt, err := db.Prepare("UPDATE todolist SET title=:title, completed=:completed WHERE id=:id")
+// UpdateTodo update a todo in the database
+func UpdateTodo(t *Todo) error {
+	stmt, err := db.Prepare("UPDATE todolist SET name=:name, completed=:completed WHERE id=:id")
 	if err != nil {
-		return 0, err
+		return err
 	}
-	r, err := stmt.Exec(sql.Named("id", todo.ID), sql.Named("title", todo.Title), sql.Named("completed", todo.Completed))
+	_, err = stmt.Exec(sql.Named("id", t.ID), sql.Named("name", t.Name), sql.Named("completed", t.Completed))
 	if err != nil {
-		return 0, err
+		return err
 	}
-	id, err := r.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-	return id, nil
+	return nil
 }
 
-// deleteTodo delete a todo in the database and return the id
-func DeleteTodo(todo Todo, db *sql.DB) (int64, error) {
+// DeleteTodo delete a todo in the database
+func DeleteTodo(t *Todo) error {
 	stmt, err := db.Prepare("DELETE FROM todolist WHERE id=:id")
 	if err != nil {
-		return 0, err
+		return err
 	}
-	r, err := stmt.Exec(sql.Named("id", todo.ID))
+	_, err = stmt.Exec(sql.Named("id", t.ID))
 	if err != nil {
-		return 0, err
+		return err
 	}
-	id, err := r.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-	return id, nil
+	return nil
 }
 
-// getTodo get a todo from the database and return the id
-func GetTodo(id int64, db *sql.DB) (Todo, error) {
+// GetTodo get a todo from the database and return todo object
+func GetTodo(t *Todo) (Todo, error) {
 	var todo Todo
 	stmt, err := db.Prepare("SELECT * FROM todolist WHERE id=;id")
 	if err != nil {
 		return todo, err
 	}
-	row := stmt.QueryRow(sql.Named("id", id))
-	if err := row.Scan(&todo.ID, &todo.Title, &todo.Completed); err != nil {
+	row := stmt.QueryRow(sql.Named("id", t.ID))
+	if err := row.Scan(&todo.ID, &todo.Name, &todo.Completed); err != nil {
 		return todo, err
 	}
 	return todo, nil
 }
 
-// getTodos get all todos from the database and return the id
-func GetTodos(c echo.Context) error {
+// GetTodos get all todos from the database and return todo slice
+func GetTodos() ([]Todo, error) {
 	var todos []Todo
 	stmt, err := db.Prepare("SELECT * FROM todolist")
 	if err != nil {
@@ -118,10 +90,10 @@ func GetTodos(c echo.Context) error {
 	for rows.Next() {
 		var todo Todo
 
-		if err := rows.Scan(&todo.ID, &todo.Title, &todo.Completed); err != nil {
+		if err := rows.Scan(&todo.ID, &todo.Name, &todo.Completed); err != nil {
 			return nil, err
 		}
 		todos = append(todos, todo)
 	}
-	return c.JSON(http.StatusOK, todos)
+	return todos, nil
 }
