@@ -39,6 +39,20 @@ func DeleteTodo(c echo.Context) error {
 }
 
 func UpdateTodo(c echo.Context) error {
-
+	todoID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return echo.ErrNotFound
+	}
+	_, err = model.GetTodo(&model.Todo{ID: int64(todoID)})
+	if err != nil {
+		return echo.ErrNotFound
+	}
+	var todo model.Todo
+	if err := c.Bind(&todo); err != nil {
+		return err
+	}
+	if err := model.UpdateTodo(&todo); err != nil {
+		return echo.ErrNotFound
+	}
 	return c.NoContent(http.StatusNoContent)
 }
