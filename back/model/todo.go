@@ -1,6 +1,11 @@
-package table
+package model
 
-import "database/sql"
+import (
+	"database/sql"
+	"net/http"
+
+	"github.com/labstack/echo"
+)
 
 type Todo struct {
 	ID        int64  `json:"id"`
@@ -100,7 +105,7 @@ func GetTodo(id int64, db *sql.DB) (Todo, error) {
 }
 
 // getTodos get all todos from the database and return the id
-func GetTodos(db *sql.DB) ([]Todo, error) {
+func GetTodos(c echo.Context) error {
 	var todos []Todo
 	stmt, err := db.Prepare("SELECT * FROM todolist")
 	if err != nil {
@@ -118,5 +123,5 @@ func GetTodos(db *sql.DB) ([]Todo, error) {
 		}
 		todos = append(todos, todo)
 	}
-	return todos, nil
+	return c.JSON(http.StatusOK, todos)
 }

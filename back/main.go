@@ -32,8 +32,8 @@ func main() {
 	//static assets
 	e.Static("/static", "../front/dist/assets/")
 
-	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
 	// routing
 	e.GET("/", table.GetTodos)

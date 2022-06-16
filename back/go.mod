@@ -3,7 +3,6 @@ module github.com/dchf12/todo
 go 1.18
 
 require (
-	github.com/dchf12/todo/table v0.0.0-00010101000000-000000000000
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/mattn/go-sqlite3 v1.14.13
 )
@@ -21,5 +20,3 @@ require (
 	golang.org/x/sys v0.0.0-20211103235746-7861aae1554b // indirect
 	golang.org/x/text v0.3.6 // indirect
 )
-
-replace github.com/dchf12/todo/table => ./table
