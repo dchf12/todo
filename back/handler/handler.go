@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/dchf12/todo/model"
 	"github.com/labstack/echo"
@@ -27,7 +28,13 @@ func GetTodos(c echo.Context) error {
 }
 
 func DeleteTodo(c echo.Context) error {
-
+	todoID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return echo.ErrNotFound
+	}
+	if err := model.DeleteTodo(&model.Todo{ID: int64(todoID)}); err != nil {
+		return echo.ErrNotFound
+	}
 	return c.NoContent(http.StatusNoContent)
 }
 
